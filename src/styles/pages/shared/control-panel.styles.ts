@@ -42,8 +42,28 @@ export const Container = styled.div`
     padding: 2.4rem;
     /* overflow: auto; */
 
+    position: relative;
+
     strong, h1, h2, h3 {
         color: ${props => props.theme.colors.title};
+    }
+
+
+    ::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: ${props => props.theme.colors.background};
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: ${props => props.theme.colors.text};
+        border-radius: 7px;
+
+        :hover {
+            background: ${props => shade(0.15, props.theme.colors.text)}
+        }
     }
 `
 
@@ -92,17 +112,21 @@ export const PseudoInput = styled.div`
 `
 
 export const CardGrid = styled.div`
+    position: relative;
+
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(264px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(264px, 364px));
     /* grid-template-columns: repeat(auto-fit, minmax(364px, 1fr)); */
     grid-gap: 1.6rem;
 
-    /* width: 90%; */
+    width: min(1400px, 100%);
     height: fit-content;
     margin: auto;
 
     /* padding: 2.4rem; */
     margin-top: 4rem;
+
+    /* justify-content: center; */
 `
 
 export const StButton = styled(Button) <{ toRight?: boolean }>`

@@ -115,12 +115,13 @@ export const YearHUDOptContainer = styled.div`
     display: flex;
     flex-direction: column;
 `
-export const YearHUDOpt = styled.button<{ active: boolean }>`
+export const YearHUDOpt = styled.a<{ active: boolean }>`
     padding: .8rem 1.6rem;
     background: rgba(0, 0, 0, 0.8);
     border-radius: 2px;
 
     transition: 0.2s;
+    color: inherit;
 
     :hover {
         transform: scale(1.1, 1.1);

@@ -9,41 +9,44 @@ import {
     StLocationOn
 } from './styles'
 import SiteImage from '../../assets/site-image.jpg'
-import { SiteProps } from '../../shared/model/user.model'
+import { HistoricalSiteProps, SiteStatus } from '../../shared/model/site.model'
 import { HTMLAttributes } from 'react'
 
 const FlagType = {
-    denied: () => <StatusFlag colorType="red">Negado</StatusFlag>,
-    underReview: () => <StatusFlag colorType="blue">Em análise</StatusFlag>,
-    accepted: () => <StatusFlag colorType="green">Aceito</StatusFlag>
+    EM_ANALISE: <StatusFlag colorType="blue">Em análise</StatusFlag>,
+    NEGADO: <StatusFlag colorType="red">Negado</StatusFlag>,
+    ACEITO: <StatusFlag colorType="green">Aceito</StatusFlag>
 }
 
 interface SiteCardProps extends HTMLAttributes<HTMLDivElement> {
-    status: 'denied' | 'underReview' | 'accepted'
-    siteData: SiteProps
+    status: SiteStatus
+    siteData: HistoricalSiteProps
 }
 
 export function SiteCard({ status, siteData, ...rest }: SiteCardProps) {
-    const { image, title, address } = siteData
+    const {
+        siteImages,
+        name,
+        address: { streetAddress, zipCode }
+    } = siteData
 
     return (
         <Container {...rest}>
             <StImage
-                src={image}
+                src={`data:image/jpeg;base64,${siteImages[0].imagePreview}`}
                 alt="Foto do sítio"
-                placeholder="blur"
                 height={250}
                 width={500}
             />
 
             <CardContent>
-                <h2>{title}</h2>
+                <h2>{name}</h2>
                 <div style={{ marginTop: '1.4rem' }}>
                     <StLocationOn />
-                    <small>{address}</small>
+                    <small>{`${streetAddress}, ${zipCode}`}</small>
                 </div>
 
-                {FlagType[status]()}
+                {FlagType[status]}
             </CardContent>
         </Container>
     )

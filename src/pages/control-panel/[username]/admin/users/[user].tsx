@@ -3,7 +3,7 @@ import { FormHandles, SubmitHandler } from '@unform/core'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import { parseCookies } from 'nookies'
-import { AxiosResponse } from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { Form } from '@unform/web'
 import * as Yup from 'yup'
 
@@ -23,8 +23,12 @@ import {
 } from '../../../../../styles/pages/shared/control-panel.styles'
 import { SidebarLayout } from '../../../../../components/layouts/sidebar-layout'
 import getValidationErrors from '../../../../../utils/getValidationErrors'
+import {
+    HistoricalSiteProps,
+    SiteProps
+} from '../../../../../shared/model/site.model'
 import { asyncHandler } from '../../../../../utils/asyncHandler'
-import { IUser, SiteProps } from '../../../../../shared/model/user.model'
+import { IUser } from '../../../../../shared/model/user.model'
 import { AUTH_TOKEN_KEY } from '../../../../../contexts/auth'
 import { SiteCard } from '../../../../../components/SiteCard'
 import { Textarea } from '../../../../../components/Textarea'
@@ -36,17 +40,19 @@ import Head from '../../../../../infra/components/Head'
 import { Input } from '../../../../../components/Input'
 import OscarImage from '../../../../../assets/centro-cultural-oscar-niemeyer.jpg'
 import CatedralImage from '../../../../../assets/catedral-de-brasilia.jpg'
+import { isArrayEmpty, isObjectEmpty } from '../../../../../utils/isItEmpty'
+import { Loading } from '../../../../../components/Loading'
 
 const FlagType = {
-    denied: () => <StatusFlag colorType="red">Negado</StatusFlag>,
-    underReview: () => <StatusFlag colorType="blue">Em análise</StatusFlag>,
-    accepted: () => <StatusFlag colorType="green">Aceito</StatusFlag>
+    NEGADO: <StatusFlag colorType="red">Negado</StatusFlag>,
+    EM_ANALISE: <StatusFlag colorType="blue">Em análise</StatusFlag>,
+    ACEITO: <StatusFlag colorType="green">Aceito</StatusFlag>
 }
 
 const statusSelectOptions = [
-    { label: 'Em análise', value: 'under review' },
-    { label: 'Aceito', value: 'accepted' },
-    { label: 'Negado', value: 'denied' }
+    { label: 'Em análise', value: 'EM_ANALISE' },
+    { label: 'Aceito', value: 'ACEITO' },
+    { label: 'Negado', value: 'NEGADO' }
 ]
 
 const SiteDatas: SiteProps[] = [
@@ -72,13 +78,37 @@ const SiteDatas: SiteProps[] = [
         address: 'Lote 12 - Brasília, DF, 70050-000'
     }
 ]
-function User({ userData }) {
+
+const statusCase = {
+    EM_ANALISE: 'Em análise',
+    ACEITO: 'Aceito',
+    NEGADO: 'Negado'
+}
+
+interface ComponentProps {
+    userData: any
+    userHistoricalSites: HistoricalSiteProps[]
+}
+
+interface UpdateFormType {
+    comment: string
+    statusSelect: string
+    vrLink: string
+}
+
+function User({ userData, userHistoricalSites }: ComponentProps) {
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [user, setUser] = useState(userData)
+
+    const [historicalSites, setHistoricalSites] = useState(userHistoricalSites)
+    const [selectedSite, setSelectedSite] = useState({} as HistoricalSiteProps)
+    const [isLoading, setIsLoading] = useState(false)
 
     const formModalRef = useRef<FormHandles>()
     const { addToast } = useToast()
     const router = useRouter()
+
+    // console.log(userHistoricalSites)
 
     const schema = Yup.object({
         statusSelect: Yup.string().required('Status obrigatório'),
@@ -88,9 +118,15 @@ function User({ userData }) {
 
     const handleCloseModal = useCallback(() => {
         setIsModalVisible(false)
+        setSelectedSite({} as HistoricalSiteProps)
     }, [])
 
-    const handleFormSubmit: SubmitHandler<FormData> = async (
+    const handleOpenModal = useCallback(site => {
+        setIsModalVisible(true)
+        setSelectedSite(site)
+    }, [])
+
+    const handleFormSubmit: SubmitHandler<UpdateFormType> = async (
         data,
         { reset }
     ) => {
@@ -102,6 +138,33 @@ function User({ userData }) {
             })
 
             // Success validation
+            setIsLoading(true)
+            const { comment, vrLink, statusSelect } = data
+
+            const response = await axios.put(
+                `/api/admin/historical-sites/update?id=${selectedSite.id}`,
+                {
+                    comment,
+                    link:
+                        vrLink ||
+                        `https://rv-history.vercel.app/3d-view?idHistoricalSite=${
+                            selectedSite.id
+                        }&year=${2020}`,
+                    status: statusSelect
+                }
+            )
+
+            if (response && response.data) {
+                // console.log(response.data)
+                const newHistoricalSite = response.data
+                setHistoricalSites(prev => {
+                    const filteredArray = prev.filter(
+                        site => site.id !== newHistoricalSite.id
+                    )
+
+                    return [...filteredArray, newHistoricalSite]
+                })
+            }
         } catch (err) {
             if (err instanceof Yup.ValidationError) {
                 // Validation failed
@@ -109,42 +172,38 @@ function User({ userData }) {
 
                 formModalRef.current?.setErrors(validationErrors)
             }
+        } finally {
+            setIsLoading(false)
+            setIsModalVisible(false)
         }
     }
 
     return (
         <Container>
-            <Head title="Meus uploads | RV History" />
+            <Head title={`Uploads de ${user.firstName} | RV History`} />
             <Modal isVisible={isModalVisible}>
                 <ModalContainer>
                     <ModalCloseButton onClick={handleCloseModal}>
                         <StClose />
                     </ModalCloseButton>
                     <Form ref={formModalRef} onSubmit={handleFormSubmit}>
-                        <h2>Catedral Metropolitana de Brasília</h2>
+                        <h2>{selectedSite.name}</h2>
                         <ModalGridRow>
                             <div>
                                 <h3>Imagens</h3>
                                 <ModalSubItem>
                                     <ul>
-                                        <li>
-                                            <a href="#">
-                                                10-12-2020-asddd.jpeg{' '}
-                                                <StDownLoad />
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                10-12-2020-asdd.jpeg{' '}
-                                                <StDownLoad />
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                10-12-2020-asdd.jpeg{' '}
-                                                <StDownLoad />
-                                            </a>
-                                        </li>
+                                        {selectedSite.siteImages?.map(item => (
+                                            <li key={item.id}>
+                                                <a
+                                                    href={`data:image/jpeg;base64,${item.image3D}`}
+                                                    download={`image_${item.id}`}
+                                                >
+                                                    image_{item.id}{' '}
+                                                    <StDownLoad />
+                                                </a>
+                                            </li>
+                                        ))}
                                     </ul>
                                 </ModalSubItem>
                             </div>
@@ -152,17 +211,22 @@ function User({ userData }) {
                             <div>
                                 <h3>Status</h3>
                                 <ModalSubItem>
-                                    <Select
-                                        options={statusSelectOptions}
-                                        defaultValue={{
-                                            label: 'Em análise',
-                                            value: 'under review'
-                                        }}
-                                        name="statusSelect"
-                                        id="statusSelect"
-                                        instanceId="statusSelect"
-                                        placeholder="Selecione..."
-                                    />
+                                    {!isObjectEmpty(selectedSite) && (
+                                        <Select
+                                            defaultValue={
+                                                statusSelectOptions.filter(
+                                                    opt =>
+                                                        opt.value ===
+                                                        selectedSite.status
+                                                )[0]
+                                            }
+                                            name="statusSelect"
+                                            id="statusSelect"
+                                            instanceId="statusSelect"
+                                            placeholder="Selecione..."
+                                            options={statusSelectOptions}
+                                        />
+                                    )}
                                 </ModalSubItem>
                             </div>
                         </ModalGridRow>
@@ -176,6 +240,9 @@ function User({ userData }) {
                                         placeholder="Deixe seu comentário..."
                                         rows={8}
                                         maxLength={200}
+                                        defaultValue={
+                                            selectedSite.comment || ''
+                                        }
                                     />
                                 </ModalSubItem>
                             </div>
@@ -188,6 +255,9 @@ function User({ userData }) {
                                         name="vrLink"
                                         id="vrLink"
                                         placeholder="Ex: https://rv-history.vercel.app/..."
+                                        defaultValue={`https://rv-history.vercel.app/3d-view?idHistoricalSite=${
+                                            selectedSite.id
+                                        }&year=${2020}`}
                                     />
                                 </ModalSubItem>
                             </div>
@@ -196,22 +266,24 @@ function User({ userData }) {
                         <StButton toRight type="submit">
                             Enviar
                         </StButton>
+                        <Loading isVisible={isLoading} />
                     </Form>
                 </ModalContainer>
             </Modal>
 
             <h2>{user.firstName}'s informations</h2>
             <CardGrid>
-                {SiteDatas.map(site => (
+                {historicalSites.map(site => (
                     <SiteCard
-                        status="denied"
-                        onClick={() => setIsModalVisible(true)}
+                        key={site.id}
+                        status={site.status}
+                        onClick={() => handleOpenModal(site)}
                         siteData={site}
                     />
                 ))}
-                {[0, 0].map(item => (
-                    <div style={{ opacity: 0 }} />
-                ))}
+                {isArrayEmpty(historicalSites) && (
+                    <strong>Não encontramos nenhum sítio</strong>
+                )}
             </CardGrid>
 
             <Copy>&copy; 2021 RVHistory. All right reserved.</Copy>
@@ -236,6 +308,7 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
         }
     }
 
+    // Usuário(admin), é o esperado pelo menos
     const [userResponse, userError] = await asyncHandler<AxiosResponse<IUser>>(
         api.get('/api/account')
     )
@@ -249,13 +322,16 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
         }
     }
 
-    const { params } = ctx
+    const { params, query } = ctx
 
-    const [response, error] = await asyncHandler<AxiosResponse<IUser>>(
+    const [userData, userDataError] = await asyncHandler<AxiosResponse<IUser>>(
         api.get(`/api/admin/users/${params['user']}`)
     )
+    const [userHistoricalSites, error] = await asyncHandler(
+        api.get(`/api/historical-sites/user/${query['userId']}`)
+    )
 
-    if (error) {
+    if (userDataError || error) {
         return {
             notFound: true
         }
@@ -263,7 +339,8 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
 
     return {
         props: {
-            userData: response.data
+            userData: userData.data,
+            userHistoricalSites: userHistoricalSites.data
         }
     }
 }

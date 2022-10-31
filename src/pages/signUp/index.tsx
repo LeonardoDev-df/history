@@ -95,7 +95,7 @@ function signUp() {
             addToast({
                 type: 'success',
                 title: 'Sucesso! Agora ative sua conta',
-                description: 'Aceesse seu email para ativar sua conta'
+                description: 'Acesse seu email para ativar sua conta'
             })
 
             //route.back() Ou route.push('/signIn')
