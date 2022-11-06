@@ -4,9 +4,6 @@ import { useRouter } from 'next/router'
 import { ThemeContext } from 'styled-components'
 import { shade, lighten } from 'polished'
 import Switch from 'react-switch'
-import * as RiIcons from 'react-icons/ri'
-import * as IoIcons from 'react-icons/io'
-import * as AiIcons from 'react-icons/ai'
 
 import { AuthContext } from '../../contexts/auth'
 import {
@@ -135,7 +132,7 @@ export const Sidebar = ({ changeTheme, showSidebar }: SidebarProps) => {
                     <Icon />
                     <span>{title}</span>
                 </Item>
-                
+
             ))}
 
             <Loading isVisible={isLoading} type="no-overlay" />
