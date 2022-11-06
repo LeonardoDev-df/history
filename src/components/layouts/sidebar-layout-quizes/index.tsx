@@ -34,10 +34,7 @@ export const SidebarLayout: React.FC<{ changeTheme(): void }> = ({
                     </Link>
 
                     <button onClick={() => setShowSidebar(prev => !prev)}>
-                        <One $on={showSidebar} />
-                        <Two $on={showSidebar} />
-                        <Three $on={showSidebar} />
-
+                        
                     </button>
 
                     <nav>
