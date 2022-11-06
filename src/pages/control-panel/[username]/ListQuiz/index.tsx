@@ -45,7 +45,7 @@ import { InputQuiz } from '../../../../components/InputQuiz'
 import { Input } from '../../../../components/Input'
 import { InputQuizpesq } from '../../../../components/InputQuizpesq'
 import Head from '../../../../infra/components/Head'
-import { AiOutlineReload } from 'react-icons/ai'
+
 
 interface CepResponse {
     cep: string
