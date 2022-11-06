@@ -13,7 +13,6 @@ export const Container = styled.span<LoaderProps>`
 
     transition: 0.2s;
     z-index: 99;
-    padding-top: 1.6rem;
 
     ${props => props.show && css`
         opacity: 1;

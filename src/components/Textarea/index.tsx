@@ -1,7 +1,7 @@
 import { useRef, useEffect, TextareaHTMLAttributes, useState } from 'react'
 import { useField } from '@unform/core'
 
-import { Container, AlertIcon, Error } from './styles'
+import { Container } from './styles'
 
 interface Props {
     name: string
@@ -25,6 +25,9 @@ export function Textarea({ name, ...rest }: TextareaProps) {
             },
             setValue: (ref, value) => {
                 ref.current.value = value
+            },
+            clearValue: ref => {
+                ref.current.value = ''
             }
         })
     }, [fieldName, registerField])
@@ -56,12 +59,7 @@ export function Textarea({ name, ...rest }: TextareaProps) {
                 {...rest}
             />
 
-            {/* {error && <span>{error}</span>} */}
-            {error && (
-                <Error title={error}>
-                    <AlertIcon />
-                </Error>
-            )}
+            {error && <span>{error}</span>}
         </Container>
     )
 }

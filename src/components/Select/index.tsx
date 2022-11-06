@@ -57,7 +57,7 @@ export function Select({ name, ...rest }: Props) {
     return (
         <StReactSelect
             styles={customStyles}
-            // defaultValue={defaultValue}
+            defaultValue={defaultValue}
             ref={selectRef}
             classNamePrefix="react-select"
             isErrored={!!error}

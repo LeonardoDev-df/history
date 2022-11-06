@@ -1,11 +1,4 @@
-import {
-    useState,
-    useEffect,
-    useCallback,
-    MouseEventHandler,
-    MouseEvent
-} from 'react'
-import { useRouter } from 'next/router'
+import { useState, useEffect } from 'react'
 import {
     MapContainer,
     TileLayer,
@@ -20,7 +13,16 @@ import { MAPBOX_ACCESS_TOKEN } from '../../config/constants'
 import { LeafletIcon } from '../../components/MarkerIcon'
 import { Button } from '../../components/Button'
 import { StPopup, PopupBottom } from './styles'
-import { MapHistoricalSite } from '../../shared/model/site.model'
+import { StaticImageData } from '../../shared/model/user.model'
+
+interface MarkerProps {
+    id: string | number
+    position: [number, number]
+    popupMessage: string
+    image: StaticImageData
+    title: string
+    address: string
+}
 
 export interface MapFunctionsProps {
     setView: (
@@ -32,7 +34,7 @@ export interface MapFunctionsProps {
 interface MapProps {
     children?: React.ReactNode
     center: [number, number]
-    markers?: Array<MapHistoricalSite>
+    markers?: Array<MarkerProps>
     initialPosition?: [number, number]
     getMapFunctions?(mapFunc: MapFunctionsProps): void
     zoom: number
@@ -45,12 +47,6 @@ function MapComponent({
     markers,
     initialPosition
 }: MapProps) {
-    const router = useRouter()
-
-    const handleButtonClick = useCallback((item: MapHistoricalSite) => {
-        router.push(`/3d-view?idHistoricalSite=${item.id}&year=${2021}`)
-    }, [])
-
     return (
         <MapContainer
             center={center}
@@ -80,27 +76,24 @@ function MapComponent({
                         position={item.position}
                         icon={LeafletIcon({
                             image: item.image,
-                            title: item.name
+                            title: item.title
                         })}
                     >
                         <StPopup>
                             <img
-                                src={`data:image/jpeg;base64,${item.image}`}
+                                src={(item.image as any).src || item.image}
                                 alt="Imagem do sítio"
                             />
                             <PopupBottom>
                                 <p>
                                     <strong>Nome: </strong>
-                                    {item.name}
+                                    {item.title}
                                 </p>
                                 <p>
                                     <strong>Descrição: </strong>
-                                    {item.description}
+                                    {item.popupMessage}
                                 </p>
-                                <Button
-                                    style={{ marginTop: '1.6rem' }}
-                                    onClick={() => handleButtonClick(item)}
-                                >
+                                <Button style={{ marginTop: '1.6rem' }}>
                                     Visitar
                                 </Button>
                             </PopupBottom>

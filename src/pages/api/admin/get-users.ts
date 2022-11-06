@@ -11,6 +11,8 @@ const getUsersHandler: NextApiHandler = async (req, res) => {
         try {
             const api = getAPIClient({ req })
 
+            // Acredito não precisar de query porque ele pega do token
+            // Então somente se certificar de que o token exista
             const { data } = await api.get<IUser[]>('/api/admin/users', {
                 headers: {
                     "Content-Type": "application/json"

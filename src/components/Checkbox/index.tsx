@@ -44,14 +44,7 @@ export function CustomCheckbox({
 
     return (
         <Container isErrored={!!error}>
-            <input
-                defaultChecked={defaultChecked}
-                ref={inputRef}
-                value={value}
-                type="checkbox"
-                id={fieldName}
-                {...rest}
-            />
+            
 
             <span></span>
 

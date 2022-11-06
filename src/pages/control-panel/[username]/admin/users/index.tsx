@@ -1,9 +1,9 @@
 import { useState, useCallback, useMemo, useContext } from 'react'
-import { ThemeContext } from 'styled-components'
-import axios, { AxiosResponse } from 'axios'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import { parseCookies } from 'nookies'
+import { AxiosResponse } from 'axios'
+import { ThemeContext } from 'styled-components'
 import { Column } from 'react-table'
 
 import {
@@ -21,41 +21,32 @@ import {
     StButton
 } from '../../../../../styles/pages/shared/control-panel.styles'
 import { SidebarLayout } from '../../../../../components/layouts/sidebar-layout'
-import { AUTH_TOKEN_KEY, AuthContext } from '../../../../../contexts/auth'
 import { asyncHandler } from '../../../../../utils/asyncHandler'
-import { IUser } from '../../../../../shared/model/user.model'
-import { getAPIClient } from '../../../../../services/axios'
-import { Loading } from '../../../../../components/Loading'
+import { AUTH_TOKEN_KEY, AuthContext } from '../../../../../contexts/auth'
 import { useToast } from '../../../../../hooks/use-toast'
 import { Table } from '../../../../../components/Table'
 import { Modal } from '../../../../../components/Modal'
+// import { Button } from '../../../../../components/Button'
 import Head from '../../../../../infra/components/Head'
+import { IUser } from '../../../../../shared/model/user.model'
+import { getAPIClient } from '../../../../../services/axios'
 
 type CustomRow = {
     firstName: string
     login: string
     email: string
-    id: number
 }
 
 function Users({ tableData }) {
+    const [isModalVisible, setIsModalVisible] = useState(false)
     const [selectedRow, setSelectedRow] = useState({} as CustomRow)
     const [data, setData] = useState(tableData || ([] as IUser[]))
-    const [isModalVisible, setIsModalVisible] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
 
     const { colors } = useContext(ThemeContext)
     const { push, query } = useRouter()
-    const { addToast } = useToast()
-
-    console.log(tableData)
 
     const columns: Column<any>[] = useMemo(
         () => [
-            {
-                Header: 'ID',
-                accessor: 'id' // accessor is the "key" in the data
-            },
             {
                 Header: 'Nome',
                 accessor: 'firstName' // accessor is the "key" in the data
@@ -80,42 +71,6 @@ function Users({ tableData }) {
         setSelectedRow(row)
     }, [])
 
-    const handleUserDelete = useCallback(async () => {
-        try {
-            setIsLoading(true)
-            const res = await axios.delete(
-                `/api/admin/delete-user?login=${selectedRow.login}`
-            )
-
-            addToast({
-                title: 'Deletado!',
-                description: 'Usuário deletado com sucesso',
-                type: 'success'
-            })
-        } catch (e) {
-            addToast({
-                title: 'Eita!!!',
-                description:
-                    'Não conseguimos deletar este usuário, por favor tente novamente',
-                type: 'error'
-            })
-        } finally {
-            setIsLoading(false)
-            setIsModalVisible(false)
-            handleTableUpdate()
-        }
-    }, [selectedRow])
-
-    const handleTableUpdate = useCallback(async () => {
-        const [response, error] = await asyncHandler(
-            axios.get<IUser[]>('/api/admin/get-users')
-        )
-
-        if (response && response.data) {
-            setData(response.data)
-        }
-    }, [])
-
     const ActionButtons = useCallback(
         ({ row }) => (
             <ActionButtonContainer>
@@ -123,7 +78,7 @@ function Users({ tableData }) {
                     colorType="blue"
                     onClick={() => {
                         push(
-                            `/control-panel/${query.username}/admin/users/${row.login}?userId=${row.id}`
+                            `/control-panel/${query.username}/admin/users/${row.login}`
                         )
                     }}
                 >
@@ -164,7 +119,6 @@ function Users({ tableData }) {
                             tintColor={colors.primary}
                             color="transparent"
                             style={{ marginRight: '.8rem' }}
-                            onClick={handleUserDelete}
                         >
                             Sim
                         </StButton>
@@ -186,8 +140,6 @@ function Users({ tableData }) {
                     actionButtons={useCallback(ActionButtons, [])}
                 />
             </Paper>
-
-            <Loading isVisible={isLoading} />
 
             <Copy>&copy; 2021 RVHistory. All right reserved.</Copy>
         </Container>

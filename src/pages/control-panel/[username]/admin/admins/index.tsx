@@ -14,6 +14,7 @@ import {
     ActionButtonContainer,
     ActButton,
     StEye,
+    StAdd,
     StTrash,
     ModalCloseButton,
     StClose,
@@ -81,6 +82,7 @@ function Admins({ tableData }) {
                     // }}
                 >
                     <StEye />
+                   
                 </ActButton>
                 {/* <ActButton colorType="red" onClick={() => handleOpenModal(row)}>
                     <StTrash />

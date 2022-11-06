@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react'
-import axios from 'axios'
 import { useMap } from 'react-leaflet'
 
 import {
@@ -13,69 +12,42 @@ import StaticSiteImage from '../../assets/site-image.jpg'
 import { isArrayEmpty, isObjectEmpty } from '../../utils/isItEmpty'
 import { SearchMapRes } from '../SearchMapRes'
 import { SearchInput } from '../SearchInput'
-import {
-    MapHistoricalSite,
-    StaticImageData
-} from '../../shared/model/site.model'
-import { Loading } from '../Loading'
+import { StaticImageData } from '../../shared/model/user.model'
+
+type DataItem = {
+    id: string | number
+    position: [number, number]
+    popupMessage: string
+    image: StaticImageData
+    title: string
+    address: string
+}
 
 interface SearchMapSideProps {
-    data: MapHistoricalSite[]
+    data: DataItem[]
 }
 
 export function SearchMapSide({ data }: SearchMapSideProps) {
-    const [searchData, setSearchData] = useState([] as MapHistoricalSite[])
+    const [searchData, setSearchData] = useState([])
     const [showRes, setShowRes] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
     const map = useMap()
 
-    const handleButtonClick = useCallback(async (value: string) => {
+    const handleButtonClick = useCallback((value: string) => {
         if (value) {
             const filteredArray = data.filter(
                 item =>
-                    item.name.substr(0, value.length).toLowerCase() ===
+                    item.title.substr(0, value.length).toLowerCase() ===
                     value.toLowerCase()
             )
 
-            try {
-                setIsLoading(true)
-                setShowRes(true)
-                const response = await axios.get(
-                    `/api/historical-sites/map/filter?s=${value}`
-                )
-
-                if (response && response.data) {
-                    console.log(response.data)
-                    const handledResponse = response.data.map(item => ({
-                        id: item.id,
-                        name: item.name,
-                        description: item.description,
-                        image: item.siteImageMapDTOS[0].imagePreview,
-                        position: [
-                            Number(item.latitude),
-                            Number(item.longitude)
-                        ],
-                        address: {
-                            streetAddress: item.streetAddress,
-                            city: item.city,
-                            uf: item.uf,
-                            zipCode: item.zipCode
-                        }
-                    }))
-
-                    setSearchData(handledResponse)
-                }
-            } catch (error) {
-                // Handle error
-            } finally {
-                setIsLoading(false)
-            }
+            setSearchData(filteredArray)
+            setShowRes(true)
         } else {
             // setSearchData([])
         }
     }, [])
 
-    const handleMapResClick = useCallback((e, item: MapHistoricalSite) => {
+    const handleMapResClick = useCallback((e, item: DataItem) => {
         map.setView(item.position, 15)
     }, [])
 
@@ -107,7 +79,6 @@ export function SearchMapSide({ data }: SearchMapSideProps) {
                     <ResClose onClick={() => setShowRes(false)}>
                         Fechar
                     </ResClose>
-                    <Loading isVisible={isLoading} type="no-overlay" />
                 </div>
             )}
         </Container>

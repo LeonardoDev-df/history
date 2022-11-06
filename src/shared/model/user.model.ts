@@ -28,3 +28,19 @@ export const defaultValue: Readonly<IUser> = {
     lastModifiedBy: '',
     lastModifiedDate: null
 };
+
+export interface StaticImageData {
+    src: string
+    height: number
+    width: number
+    blurDataURL?: string
+}
+
+export interface SiteProps {
+    id: string | number
+    position: [number, number]
+    description: string
+    image: StaticImageData
+    title: string
+    address: string
+}
