@@ -35,19 +35,19 @@ import {
     PseudoInput,
     StForm,
     FormInputContainer
-} from '../../../../styles/pages/shared/control-panel.styles'
-import { SidebarLayout } from '../../../../components/layouts/sidebar-layout'
-import getValidationErrors from '../../../../utils/getValidationErrors'
-import { sortArrayObject } from '../../../../utils/sortArrayObject'
-import { asyncHandler } from '../../../../utils/asyncHandler'
-import { InputMask } from '../../../../components/InputMask'
-import { FileForm } from '../../../../components/FileForm'
-import { AUTH_TOKEN_KEY } from '../../../../contexts/auth'
-import { Loading } from '../../../../components/Loading'
-import { Select } from '../../../../components/Select'
-import { useToast } from '../../../../hooks/use-toast'
-import { Input } from '../../../../components/Input'
-import Head from '../../../../infra/components/Head'
+} from '../../../../../styles/pages/shared/control-panel.styles'
+import { SidebarLayout } from '../../../../../components/layouts/sidebar-layout'
+import getValidationErrors from '../../../../../utils/getValidationErrors'
+import { sortArrayObject } from '../../../../../utils/sortArrayObject'
+import { asyncHandler } from '../../../../../utils/asyncHandler'
+import { InputMask } from '../../../../../components/InputMask'
+import { FileForm } from '../../../../../components/FileForm'
+import { AUTH_TOKEN_KEY } from '../../../../../contexts/auth'
+import { Loading } from '../../../../../components/Loading'
+import { Select } from '../../../../../components/Select'
+import { useToast } from '../../../../../hooks/use-toast'
+import { Input } from '../../../../../components/Input'
+import Head from '../../../../../infra/components/Head'
 
 
 interface CepResponse {
