@@ -185,68 +185,8 @@ function Upload({ UFOptions }) {
         [files]
     )
 
-    const handleCepBlur = useCallback(
-        async ({ target: { value } }: FocusEvent<HTMLInputElement>) => {
-            const cep = value.replace(/\D/g, '')
-
-            const optionsCategory = [
-                { value: 'Sítio', label: 'Sítio' },
-                { value: 'Monumento', label: 'Monumento' },
-                { value: 'Museu', label: 'Museu' }
-              ]
-
-            if (cep != '') {
-                const validacep = /^[0-9]{8}$/
-
-                if (validacep.test(cep)) {
-                    // * Habilitar o loading na tela
-                    setIsLoading(true)
-
-                    const [response, error] = await asyncHandler(
-                        axios.get<CepResponse>(
-                            `https://viacep.com.br/ws/${cep}/json/`
-                        )
-                    )
-
-                    if (response) {
-                        const {
-                            data: { logradouro, bairro, localidade, category }
-                        } = response
-
-                        formRef.current.setFieldValue(
-                            'streetAddress',
-                            logradouro
-                        )
-                        formRef.current.setFieldValue('province', bairro)
-                        formRef.current.setFieldValue('category', category)
-                        const inCategoryRef = formRef.current.getFieldRef('category')
-                        inCategoryRef.select.selectOption({ label: category, value: category })
-
-                        const inCityRef = formRef.current.getFieldRef('city')
-                        inCityRef.select.selectOption({
-                            label: localidade,
-                            value: localidade
-                        })
-                    } else {
-                        addToast({
-                            type: 'error',
-                            title: 'Ocorreu um erro ao buscar seus dados',
-                            description:
-                                'Não conseguimos buscar suas informações a partir do seu cep'
-                        })
-                    }
-                    setIsLoading(false)
-                } else {
-                    // cep inválido
-                    formRef.current.setFieldError('zipCode', 'cep inválido')
-                }
-            } else {
-                // cep sem valor
-                formRef.current.setFieldError('zipCode', 'cep é obrigatório')
-            }
-        },
-        []
-    )
+   
+    
     const optionsCategory = [
         { value: 'Sítio', label: 'Sítio' },
         { value: 'Monumento', label: 'Monumento' },
