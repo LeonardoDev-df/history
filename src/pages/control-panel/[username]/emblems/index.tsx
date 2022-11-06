@@ -14,7 +14,7 @@ import { parseCookies } from 'nookies'
 import * as Yup from 'yup'
 import axios from 'axios'
 
-import App from './App';
+
 import { Flex } from './Flex';
 
 import { Box } from './Box';
