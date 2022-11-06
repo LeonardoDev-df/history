@@ -46,8 +46,7 @@ const App: React.FC = () => {
   const [userAnswers, setUserAnswers] = useState<AnswerObject[]>([]);
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(true);
-  const divRef = useRef<HTMLDivElement>(null)
-  const formRef = useRef<FormHandles>(null)
+ 
   { /* Apagar um campo */ }
   const [show, setShow] = useState(true);
 
@@ -137,9 +136,9 @@ const App: React.FC = () => {
                     {gameOver || userAnswers.length === TOTAL_QUESTIONS ? (
                     <>
 
-                        <PaperStart ref={divRef}>
+                        <PaperStart >
                             <h1>Quiz History</h1>
-                        <StFormStart ref={formRef}>
+                        <StFormStart >
 
                             <FormGroup mult={true}>
 
