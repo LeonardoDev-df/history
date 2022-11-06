@@ -13,7 +13,7 @@ import { GetServerSideProps } from 'next'
 import { parseCookies } from 'nookies'
 import * as Yup from 'yup'
 import axios from 'axios'
-import { Grid, Row, Col } from 'react-flexbox-grid';
+
 import App from './App';
 import { Flex } from './Flex';
 
@@ -47,7 +47,7 @@ import { Select } from '../../../../components/Select'
 import { useToast } from '../../../../hooks/use-toast'
 import { Input } from '../../../../components/Input'
 import Head from '../../../../infra/components/Head'
-import { RiAlignCenter } from 'react-icons/ri'
+
 
 interface CepResponse {
     cep: string
