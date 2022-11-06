@@ -5,6 +5,9 @@ interface NavProps {
     showSidebar: boolean
 }
 
+interface HeaderProps {
+    $on: boolean;
+}
 // Navbar
 export const Header = styled.header<HeaderProps>`
     background: rgba(45, 140, 235, 0.95);
@@ -50,7 +53,7 @@ export const Header = styled.header<HeaderProps>`
 
             transition: 0.2s;
 
-            
+
         }
     }
 
