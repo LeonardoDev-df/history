@@ -15,6 +15,13 @@ export { User } from '@styled-icons/boxicons-solid/User';
 export { User as UserAlt } from '@styled-icons/boxicons-regular/User';
 export { Trash } from '@styled-icons/boxicons-solid/Trash';
 
+export { PlusSquare } from '@styled-icons/boxicons-solid/PlusSquare';
+export { SearchSquare } from '@styled-icons/fluentui-system-filled/SearchSquare';
+
+
+
+export { Edit } from '@styled-icons/boxicons-solid/Edit';
+
 export { Calendar } from '@styled-icons/boxicons-regular/Calendar';
 export { LockAlt } from '@styled-icons/boxicons-regular/LockAlt';
 export { Link } from '@styled-icons/boxicons-regular/Link';
@@ -58,5 +65,6 @@ export { Clock } from '@styled-icons/fa-regular/Clock';
 export { Body } from '@styled-icons/boxicons-regular/Body';
 export { HouseDoorFill as House } from '@styled-icons/bootstrap/HouseDoorFill';
 
-
 export { Dashboard } from '@styled-icons/boxicons-solid/Dashboard';
+
+export { Quiz } from '@styled-icons/material/Quiz';

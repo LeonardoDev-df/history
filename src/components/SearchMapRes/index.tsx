@@ -1,17 +1,27 @@
 import { HTMLAttributes, MouseEvent } from 'react'
-import {
-    MapHistoricalSite,
-    StaticImageData
-} from '../../shared/model/site.model'
+import { StaticImageData } from '../../shared/model/user.model'
 
 import { Container, ImageWrapper, AsideData } from './styles'
+interface ShortMouseEvent {
+    e: MouseEvent<HTMLButtonElement, MouseEvent>
+    item: DataItem
+}
+
+type DataItem = {
+    id: string | number
+    position: [number, number]
+    popupMessage: string
+    image: StaticImageData
+    title: string
+    address: string
+}
 
 interface SearchInputProps
     extends Omit<HTMLAttributes<HTMLButtonElement>, 'onClick'> {
-    data: MapHistoricalSite
+    data: DataItem
     onCustomClick(
         e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
-        item: MapHistoricalSite
+        item: DataItem
     ): void
 }
 
@@ -20,12 +30,6 @@ export function SearchMapRes({
     onCustomClick,
     ...rest
 }: SearchInputProps) {
-    let shortDescription = data.description
-
-    if (data.description.length >= 40) {
-        shortDescription = data.description.substring(0, 39).trim() + '...'
-    }
-
     return (
         <Container
             onClick={e => {
@@ -35,15 +39,15 @@ export function SearchMapRes({
         >
             <ImageWrapper>
                 <img
-                    src={`data:image/jpeg;base64,${data.image}`}
-                    alt={data.name}
+                    src={(data.image as any).src || data.image}
+                    alt={data.title}
                 />
             </ImageWrapper>
 
             <AsideData>
-                <h3>{data.name}</h3>
-                {/* <p>{shortDescription}</p> */}
-                <small>{`${data.address.streetAddress} - ${data.address.city}, ${data.address.city}, ${data.address.uf}, ${data.address.zipCode}`}</small>
+                <h3>{data.title}</h3>
+                {/* <p>{data.popupMessage}</p> */}
+                <small>{data.address}</small>
             </AsideData>
         </Container>
     )

@@ -4,9 +4,10 @@ import StaticSiteImage from '../../assets/site-image.jpg'
 import L from 'leaflet'
 
 import { Container, BottomPart, StImage } from './styles'
+import { StaticImageData } from '../../shared/model/user.model'
 
 interface MarkerIconProps {
-    image: string
+    image: StaticImageData
     title: string
 }
 
@@ -15,7 +16,7 @@ export function MarkerIcon({ image, title }: MarkerIconProps) {
 
     return (
         <Container>
-            <img src={`data:image/jpeg;base64,${image}`} />
+            <img src={(image as any).src || image} />
             <BottomPart>
                 {`${title.substring(0, 10).trim()}...` || title}
             </BottomPart>

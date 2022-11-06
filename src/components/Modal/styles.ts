@@ -7,7 +7,7 @@ interface ModalProps {
 }
 
 export const Container = styled.div<ModalProps>`
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;

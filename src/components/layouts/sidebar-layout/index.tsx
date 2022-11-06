@@ -21,6 +21,7 @@ export const SidebarLayout: React.FC<{ changeTheme(): void }> = ({
     const [showSidebar, setShowSidebar] = useState(true)
 
     return (
+
         <AppProvider>
             <Container>
                 <FixedContent>
@@ -42,5 +43,6 @@ export const SidebarLayout: React.FC<{ changeTheme(): void }> = ({
                 <Main showSidebar={showSidebar}>{children}</Main>
             </Container>
         </AppProvider>
+
     )
 }

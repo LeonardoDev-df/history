@@ -8,17 +8,11 @@ import {
     SetStateAction
 } from 'react'
 import { OrbitControls } from '@react-three/drei'
-import { useRouter } from 'next/router'
 import * as THREE from 'three'
-import axios from 'axios'
 
-import { SiteImage3DView } from '../../shared/model/site.model'
-import { asyncHandler } from '../../utils/asyncHandler'
-import { isArrayEmpty } from '../../utils/isItEmpty'
-import { HudView } from '../../components/HudView'
 import { Container } from '../../styles/pages/3d'
+import { HudView } from '../../components/HudView'
 import Head from '../../infra/components/Head'
-import { GetServerSideProps } from 'next'
 
 interface PlaceType {
     linkedPlace: number
@@ -33,6 +27,47 @@ interface DomeProps {
     texture: THREE.Texture
     onClick: (event: ThreeEvent<MouseEvent>) => void
 }
+
+// Imagens panôramicas !== imagens 360
+// Resolução boas: 2048x1024
+const places: PlaceType[] = [
+    {
+        linkedPlace: 1,
+        color: 'white',
+        position: [12, 0, -16],
+        url: '/360test/test_pano.jpg'
+    },
+    {
+        linkedPlace: 2,
+        color: 'white',
+        position: [-16, 0, -16],
+        url: '/360test/porto.jpg'
+    },
+    {
+        linkedPlace: 3,
+        color: 'red',
+        position: [32, 0, 16],
+        url: '/360test/museu.jpg'
+    },
+    {
+        linkedPlace: 4,
+        color: 'black',
+        position: [24, 0, 0],
+        url: '/360test/sala-maluca.jpg'
+    },
+    {
+        linkedPlace: 5,
+        color: 'white',
+        position: [0, 0, -16],
+        url: '/360test/salao.jpg'
+    },
+    {
+        linkedPlace: 0,
+        color: 'white',
+        position: [-4, 0, 16],
+        url: '/360test/shangai.jpg'
+    }
+]
 
 function Dome({ color, buttonPosition: bp, texture, onClick }: DomeProps) {
     const pointRef = useRef<THREE.Mesh>()
@@ -69,12 +104,7 @@ function Dome({ color, buttonPosition: bp, texture, onClick }: DomeProps) {
                 onPointerOut={() => setHovered(false)}
             >
                 <sphereGeometry attach="geometry" args={[1, 30, 30]} />
-                <meshBasicMaterial
-                    attach="material"
-                    color={color}
-                    transparent
-                    opacity={0.5}
-                />
+                <meshBasicMaterial attach="material" color={color} transparent opacity={0.5} />
             </mesh>
         </group>
     )
@@ -82,169 +112,45 @@ function Dome({ color, buttonPosition: bp, texture, onClick }: DomeProps) {
 
 function Portals({
     placeNumber,
-    setPlaceNumber,
-    places
+    setPlaceNumber
 }: {
     placeNumber: number
     setPlaceNumber: Dispatch<SetStateAction<number>>
-    places: SiteImage3DView[]
 }) {
-    const { buttonColor, buttonPosition, numberImage = 0 } = places[placeNumber]
+    const { color, position, linkedPlace } = places[placeNumber]
     const textures = useLoader(
         THREE.TextureLoader,
-        places.map(place => place.image3D)
+        places.map(place => place.url)
     )
     return (
         <Dome
-            color={buttonColor}
-            buttonPosition={buttonPosition}
+            color={color}
+            buttonPosition={position}
             texture={textures[placeNumber]}
-            onClick={() => setPlaceNumber(numberImage)}
+            onClick={() => setPlaceNumber(linkedPlace)}
         />
     )
 }
 
-function Preload({ places }: { places: SiteImage3DView[] }) {
+function Preload() {
     // This component pre-loads textures in order to lessen loading impact when clicking portals
     const { gl } = useThree()
     const maps = useLoader(
         THREE.TextureLoader,
-        places.map(place => place.image3D)
+        places.map(place => place.url)
     )
     useEffect(() => maps.forEach(gl.initTexture), [maps, gl.initTexture])
     return null
 }
 
-function ThreeDView({
-    idHistoricalSite,
-    year
-}: {
-    idHistoricalSite: number
-    year: number
-}) {
+function ThreeDView() {
     const [placeNumber, setPlaceNumber] = useState(0)
-    const [historicalSitePlaces, setHistoricalSitePlaces] = useState(
-        [] as SiteImage3DView[]
-    )
-    const [historicalSiteInfo, setHistoricalSiteInfo] = useState<any>()
-
-    useEffect(() => {
-        async function getHistoricalSiteImages() {
-            const [response, error] = await asyncHandler(
-                axios.get(
-                    `https://rv-history-api.herokuapp.com/api/site-images/${idHistoricalSite}/${year}`
-                )
-            )
-
-            if (error) {
-                // handling error
-                return
-            }
-
-            const handledResponse = response.data.map((item, index) => {
-                const {
-                    numberImage,
-                    // buttonPosition: { x, y, z },
-                    image3D,
-                    imagePreview
-                    // year
-                } = item
-
-                return {
-                    numberImage:
-                        numberImage || index === response.data.length - 1
-                            ? 0
-                            : index + 1,
-                    buttonColor: 'white',
-                    buttonPosition: [12, 0, -16],
-                    image3D: `data:image/jpeg;base64,${image3D}`,
-                    imagePreview: `data:image/jpeg;base64,${imagePreview}`
-                    // year: year || 2021
-                }
-            })
-
-            setHistoricalSitePlaces(handledResponse)
-        }
-
-        getHistoricalSiteImages()
-    }, [])
-
-    useEffect(() => {
-        async function getHistoricalSiteInfo() {
-            const [response, error] = await asyncHandler(
-                axios.get(
-                    `/api/historical-sites/get-id?idHistoricalSite=${idHistoricalSite}`
-                )
-            )
-
-            if (error) {
-                // handling error
-                return
-            }
-
-            const {
-                id,
-                name,
-                description,
-                years,
-                address: { streetAddress, city, uf, zipCode },
-                like
-            } = response.data
-
-            const handledSiteInfoRes = {
-                id,
-                name,
-                like: like || 0,
-                description,
-                years: years || [2021],
-                address: {
-                    streetAddress,
-                    city,
-                    uf,
-                    zipCode
-                }
-            }
-
-            setHistoricalSiteInfo(handledSiteInfoRes)
-        }
-
-        getHistoricalSiteInfo()
-    }, [])
-
-    const handledPlaces = historicalSitePlaces.map(item => ({
-        image: item.imagePreview,
-        link: item.numberImage
-    }))
-
-    if (
-        !historicalSitePlaces ||
-        isArrayEmpty(historicalSitePlaces) ||
-        !historicalSiteInfo
-    ) {
-        return (
-            <Container>
-                <Head title="Carregando..." />
-                Loading...
-            </Container>
-        )
-    }
 
     return (
         <Container>
-            <Head
-                title={`Visão 3D ${historicalSiteInfo.name
-                    .substring(0, 10)
-                    .trim()}`}
-            />
+            <Head title="3D View" />
 
-            <HudView
-                SiteData={{
-                    ...historicalSiteInfo,
-                    preview_images: handledPlaces
-                }}
-                setPlace={setPlaceNumber}
-                activePlaceNumber={placeNumber}
-            >
+            <HudView setPlace={setPlaceNumber} activePlaceNumber={placeNumber}>
                 <Canvas camera={{ position: [0, 0, 0.1], fov: 75 }}>
                     <OrbitControls
                         enableZoom={false}
@@ -255,9 +161,8 @@ function ThreeDView({
                         rotateSpeed={-0.42}
                     />
                     <Suspense fallback={'Loading pano...'}>
-                        <Preload places={historicalSitePlaces} />
+                        <Preload />
                         <Portals
-                            places={historicalSitePlaces}
                             placeNumber={placeNumber}
                             setPlaceNumber={setPlaceNumber}
                         />
@@ -267,91 +172,5 @@ function ThreeDView({
         </Container>
     )
 }
-
-export const getServerSideProps: GetServerSideProps = async ctx => {
-    const {
-        query: { idHistoricalSite, year }
-    } = ctx
-
-    return {
-        props: {
-            idHistoricalSite,
-            year
-        }
-    }
-}
-
-// export const getServerSideProps: GetServerSideProps = async ctx => {
-//     const api = getAPIClient(ctx)
-
-//     const {
-//         query: { idHistoricalSite, year }
-//     } = ctx
-
-//     const [placesResponse, placesError] = await asyncHandler(
-//         api.get(`/api/site-images/${idHistoricalSite}/${year}`)
-//     )
-//     const [siteInfoResponse, error] = await asyncHandler(
-//         api.get(`/api/historical-sites/${idHistoricalSite}`)
-//     )
-
-//     if (error || placesError) {
-//         return {
-//             notFound: true
-//         }
-//     }
-
-//     const handledResponse = placesResponse.data.map((item, index) => {
-//         const {
-//             numberImage,
-//             // buttonPosition: { x, y, z },
-//             image3D,
-//             imagePreview
-//             // year
-//         } = item
-
-//         return {
-//             numberImage:
-//                 numberImage || index === placesResponse.data.length - 1
-//                     ? 0
-//                     : index + 1,
-//             buttonColor: 'white',
-//             buttonPosition: [12, 0, -16],
-//             image3D: `data:image/jpeg;base64,${image3D}`,
-//             imagePreview: `data:image/jpeg;base64,${imagePreview}`
-//             // year: year || 2021
-//         }
-//     })
-
-//     const {
-//         id,
-//         name,
-//         description,
-//         years: siteInfoYear,
-//         address: { streetAddress, city, uf, zipCode },
-//         like
-//     } = siteInfoResponse.data
-
-//     const handledSiteInfoRes = {
-//         id,
-//         name,
-//         like: like || 0,
-//         description,
-//         years: siteInfoYear || [2021],
-//         address: {
-//             streetAddress,
-//             city,
-//             uf,
-//             zipCode
-//         }
-//     }
-
-//     return {
-//         props: {
-//             historicalSitePlaces: handledResponse,
-//             historicalSiteInfo: handledSiteInfoRes
-//         }
-//     }
-// }
 
 export default ThreeDView

@@ -1,21 +1,26 @@
 import { useEffect, useState, useMemo } from 'react'
-import { GetServerSideProps } from 'next'
 import dynamic from 'next/dynamic'
 
-import OscarImage from '../../assets/centro-cultural-oscar-niemeyer.jpg'
 import CatedralImage from '../../assets/catedral-de-brasilia.jpg'
-import { getAPIClient } from '../../services/axios'
-import { asyncHandler } from '../../utils/asyncHandler'
+import OscarImage from '../../assets/centro-cultural-oscar-niemeyer.jpg'
 import { Container } from '../../styles/pages/map'
 import Head from '../../infra/components/Head'
-import { MapHistoricalSite } from '../../shared/model/site.model'
 
 interface coords {
     lat: number
     lng: number
 }
 
-const TEST_DATA = [
+type DataItem = {
+    id: number
+    position: [number, number]
+    popupMessage: string
+    image: StaticImageData
+    title: string
+    address: string
+}
+
+const TEST_DATA: DataItem[] = [
     {
         id: 1,
         position: [51.505, -0.09],
@@ -39,22 +44,11 @@ const TEST_DATA = [
     }
 ]
 
-function SearchMap({
-    historicalSites
-}: {
-    historicalSites: MapHistoricalSite[]
-}) {
+function Map() {
     const [mapPosition, setMapPosition] = useState<coords>({
-        lat: -15.7897816,
-        lng: -47.8904577
+        lat: 51.505,
+        lng: -0.09
     })
-    const [mapHistoricalSites, setMapHistoricalSites] = useState(
-        historicalSites
-    )
-
-    useEffect(() => {
-        console.log('search-map: ', historicalSites)
-    }, [])
 
     // We use the dynamic function to ensure that the
     // React Component behave as a React Component
@@ -100,45 +94,11 @@ function SearchMap({
             <MapComponent
                 center={[mapPosition.lat, mapPosition.lng]}
                 zoom={13}
-                markers={mapHistoricalSites}
+                markers={TEST_DATA}
                 initialPosition={[mapPosition.lat, mapPosition.lng]}
             />
         </Container>
     )
 }
 
-export default SearchMap
-
-export const getServerSideProps: GetServerSideProps = async ctx => {
-    const api = getAPIClient(ctx)
-
-    const [response, error] = await asyncHandler(
-        api.get('/api/historical-sites/map')
-    )
-
-    if (response && response.data) {
-        const handledResponse = response.data.map(item => ({
-            id: item.id,
-            name: item.name,
-            description: item.description,
-            image: item.siteImageMapDTOS[0].imagePreview,
-            position: [Number(item.latitude), Number(item.longitude)],
-            address: {
-                streetAddress: item.streetAddress,
-                city: item.city,
-                uf: item.uf,
-                zipCode: item.zipCode
-            }
-        }))
-
-        return {
-            props: {
-                historicalSites: handledResponse
-            }
-        }
-    }
-
-    return {
-        props: {}
-    }
-}
+export default Map

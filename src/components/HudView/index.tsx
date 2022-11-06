@@ -1,6 +1,4 @@
-import { useEffect } from 'react'
 import { Dispatch, SetStateAction, useState } from 'react'
-import { Site3DViewHUD } from '../../shared/model/site.model'
 
 import {
     Container,
@@ -30,90 +28,67 @@ interface HudProps {
     children: React.ReactNode
     setPlace: Dispatch<SetStateAction<number>>
     activePlaceNumber: number
-    SiteData: Site3DViewHUD
 }
 
-// const SiteData = [
-//     {
-//         year: 2020,
-//         preview_images: [
-//             {
-//                 url: '/360test/normal/casa.png',
-//                 link: 0
-//             },
-//             {
-//                 url: '/360test/normal/shangai_cut.png',
-//                 link: 5
-//             },
-//             {
-//                 url: '/360test/normal/museu_cut.png',
-//                 link: 2
-//             },
-//             {
-//                 url: '/360test/normal/porto_cut.png',
-//                 link: 1
-//             }
-//         ],
-//         active: true
-//     },
-//     {
-//         year: 2010,
-//         active: false
-//     },
-//     {
-//         year: 2000,
-//         active: false
-//     },
-//     {
-//         year: 1990,
-//         active: false
-//     }
-// ]
+const SiteData = [
+    {
+        year: 2020,
+        preview_images: [
+            {
+                url: '/360test/normal/casa.png',
+                link: 0
+            },
+            {
+                url: '/360test/normal/shangai_cut.png',
+                link: 5
+            },
+            {
+                url: '/360test/normal/museu_cut.png',
+                link: 2
+            },
+            {
+                url: '/360test/normal/porto_cut.png',
+                link: 1
+            }
+        ],
+        active: true
+    },
+    {
+        year: 2010,
+        active: false
+    },
+    {
+        year: 2000,
+        active: false
+    },
+    {
+        year: 1990,
+        active: false
+    }
+]
 
-export function HudView({
-    children,
-    setPlace,
-    activePlaceNumber,
-    SiteData
-}: HudProps) {
-    const [likeNumber, setLikeNumber] = useState(SiteData.like)
+export function HudView({ children, setPlace, activePlaceNumber }: HudProps) {
     const [likeState, setLikeState] = useState(false)
-
     const [showInfo, setShowInfo] = useState(false)
     const [showPreviewImages, setShowPreviewImages] = useState(true)
-    const [yearsObj, setYearsObj] = useState(() => {
-        return SiteData.years.map(year => ({
-            year,
-            active: false
-        }))
-    })
 
     const [historyYears, setHistoryYears] = useState(SiteData)
 
-    // useEffect(() => {
-    //     console.log(SiteData)
-    // }, [])
-
-    // function handleYearChange(year: number) {
-    //     setHistoryYears(prev => {
-    //         return prev.map(item => ({
-    //             ...item,
-    //             active: item.year !== year ? false : true
-    //         }))
-    //     })
-    // }
-
-    function handleLikeIncrese() {
-        setLikeState(prev => !prev)
-        setLikeNumber(prev => (prev === SiteData.like ? prev + 1 : prev - 1))
+    function handleYearChange(year: number) {
+        setHistoryYears(prev => {
+            return prev.map(item => ({
+                ...item,
+                active: item.year !== year ? false : true
+            }))
+        })
     }
 
     return (
         <Container>
             <HeaderHUD>
                 <HeaderHUDText>
-                    <h2>{SiteData.name}</h2>
-                    <small>{`${SiteData.address.streetAddress} - ${SiteData.address.city}, ${SiteData.address.city}, ${SiteData.address.uf}, ${SiteData.address.zipCode}`}</small>
+                    <h2>Catedral Metropolitana de Brasília</h2>
+                    <small>Lote 12 - Brasília, DF, 70050-000</small>
                 </HeaderHUDText>
 
                 <HeaderHUDTools>
@@ -121,14 +96,14 @@ export function HudView({
                         <StShareIcon />
                     </button>
                     <HeartLike isBottom>
-                        <button onClick={handleLikeIncrese}>
+                        <button onClick={() => setLikeState(prev => !prev)}>
                             {!likeState ? (
                                 <StHeartOutIcon />
                             ) : (
                                 <StHeartIcon style={{ color: 'red' }} />
                             )}
                         </button>
-                        <span>{likeNumber}</span>
+                        <span>1</span>
                     </HeartLike>
                 </HeaderHUDTools>
             </HeaderHUD>
@@ -139,13 +114,13 @@ export function HudView({
                         <StArrowUpIcon />
                     </button>
                     <YearHUDOptContainer>
-                        {yearsObj.map(yearOb => (
+                        {historyYears.map(site => (
                             <YearHUDOpt
-                                href={`/3d-view?idHistoricalSite=${SiteData.id}&year=${yearOb.year}`}
-                                key={String(yearOb.year * 0.2)}
-                                active={yearOb.active}
+                                key={String(site.year)}
+                                onClick={() => handleYearChange(site.year)}
+                                active={site.active}
                             >
-                                {yearOb.year}
+                                {site.year}
                             </YearHUDOpt>
                         ))}
                     </YearHUDOptContainer>
@@ -178,9 +153,9 @@ export function HudView({
                     )}
                 </BottomHUDShowButton>
                 <BottomHUDImage>
-                    {SiteData.preview_images.map(preview => (
+                    {historyYears[0].preview_images.map(preview => (
                         <BottomHUDImageButton
-                            key={preview.link + 1}
+                            key={preview.url}
                             isActive={
                                 activePlaceNumber === preview.link
                                     ? true
@@ -188,7 +163,11 @@ export function HudView({
                             }
                             onClick={() => setPlace(preview.link)}
                         >
-                            <img src={preview.image} alt="Image preview" />
+                            <img
+                                key={preview.url}
+                                src={preview.url}
+                                alt="Porto"
+                            />
                         </BottomHUDImageButton>
                     ))}
                 </BottomHUDImage>
@@ -200,17 +179,24 @@ export function HudView({
                 >
                     <div>
                         <h3>Descrição do Sítio</h3>
-                        <small>{SiteData.description}</small>
+                        <small>
+                            A Catedral Metropolitana - Nossa Senhora Aparecida,
+                            mais conhecida como Catedral de Brasília, é um
+                            templo católico brasileiro, na qual se encontra a
+                            cátedra da Arquidiocese de Brasília, localizada na
+                            capital federal, ao sul da S1, no Eixo Monumental,
+                            região da Esplanada dos Ministérios.
+                        </small>
                     </div>
 
                     <div>
                         <h3>Local</h3>
-                        <small>{`${SiteData.address.streetAddress} - ${SiteData.address.city}, ${SiteData.address.city}, ${SiteData.address.uf}, ${SiteData.address.zipCode}`}</small>
+                        <small>Lote 12 - Brasília, DF, 70050-000</small>
                     </div>
 
                     <HeartLike isBottom={false}>
                         <StHeartIcon style={{ color: 'red' }} />
-                        <span>{likeNumber}</span>
+                        <span>1</span>
                     </HeartLike>
                 </BottomHUDInfoButtonTooltip>
                 {/* </div> */}
