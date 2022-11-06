@@ -293,7 +293,7 @@ function Upload({ UFOptions }) {
                                         id="uf"
                                         instanceId="uf"
                                         // isSearchable
-                                        onChange={''}
+                                       
                                         placeholder="Selecione..."
                                     />
                                 </div>
