@@ -138,7 +138,7 @@ const App: React.FC = () => {
 
                         <PaperStart >
                             <h1>Quiz History</h1>
-                        <StFormStart >
+                       
 
                             <FormGroup mult={true}>
 
@@ -160,7 +160,7 @@ const App: React.FC = () => {
                                                 id="category"
                                                 instanceId="uf"
                                                 // isSearchable
-                                                onChange={''}
+                                             
                                                 placeholder="Selecione..."
                                             />
                                         </div>
@@ -185,7 +185,7 @@ const App: React.FC = () => {
                                          Start
                                      </button>
 
-                            </StFormStart>
+                            
                             <Loading isVisible={isLoading} />
                             <Copy>&copy; 2021 RVHistory. All right reserved.</Copy>
                         </PaperStart>
