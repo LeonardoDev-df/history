@@ -46,7 +46,7 @@ import { Select } from '../../../../components/Select'
 import { useToast } from '../../../../hooks/use-toast'
 import { Input } from '../../../../components/Input'
 import Head from '../../../../infra/components/Head'
-import { RiAlignCenter } from 'react-icons/ri'
+
 
 interface CepResponse {
     cep: string
