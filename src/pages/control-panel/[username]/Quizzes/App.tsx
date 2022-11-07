@@ -113,7 +113,16 @@ const App: React.FC = () => {
         setShow((s) => !s)
     };
 
-   
+    const optionsCategory = [
+        { value: 'Sítio', label: 'Sítio' },
+        { value: 'Monumento', label: 'Monumento' },
+        { value: 'Museu', label: 'Museu' }
+      ];
+    const optionsDificulty = [
+        { value: 'Facil', label: 'Fácil' },
+        { value: 'Medio', label: 'Médio' },
+        { value: 'Dificil', label: 'Difícil' }
+      ];
 
 
 
