@@ -4,9 +4,6 @@ import QuestionCard from '../../../../components/Question/QuestionCard';
 // types
 
 
-// Styles
-import { GlobalStyle, Wrapper } from './App.styles';
-
 import { Loading } from '../../../../components/Loading'
 import { Select } from '../../../../components/Select'
 import { Input, shuffleArray } from '../../../../components/Input'
@@ -22,7 +19,9 @@ import {
     StButton,
     Copy,
     StForm,
-    FormInputContainer
+    FormInputContainer,
+    GlobalStyle,
+     Wrapper
 } from '../../../../styles/pages/shared/control-panel.styles';
 
 
