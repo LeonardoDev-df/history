@@ -10,7 +10,7 @@ import { GlobalStyle, Wrapper } from './App.styles';
 
 import { Loading } from '../../../../components/Loading'
 import { Select } from '../../../../components/Select'
-import { Input } from '../../../../components/Input'
+import { Input, shuffleArray } from '../../../../components/Input'
 
 import background from "../../../../assets/laptops.png";
 
@@ -24,7 +24,34 @@ import {
     Copy,
     StForm,
     FormInputContainer
-} from '../../../../styles/pages/shared/control-panel.styles'
+} from '../../../../styles/pages/shared/control-panel.styles';
+
+
+export type Question = {
+  category: string;
+  correct_answer: string;
+  difficulty: string;
+  incorrect_answers: string[];
+  question: string;
+  type: string;
+};
+
+export enum Difficulty {
+  EASY = "easy",
+  MEDIUM = "medium",
+  HARD = "hard",
+}
+
+export type QuestionsState = Question & { answers: string[] };
+
+export const fetchQuizQuestions = async (amount: number, difficulty: Difficulty): Promise<QuestionsState[]> => {
+  const endpoint = `https://opentdb.com/api.php?amount=${amount}&difficulty=${difficulty}&type=multiple`;
+  const data = await (await fetch(endpoint)).json();
+  return data.results.map((question: Question) => ({
+    ...question,
+    answers: shuffleArray([...question.incorrect_answers, question.correct_answer])
+  }))
+};
 
 
 
@@ -228,5 +255,7 @@ const App: React.FC = () => {
     </>
   );
 };
+
+/// <reference types="react-scripts" />
 
 export default App;
