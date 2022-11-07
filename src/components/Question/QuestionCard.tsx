@@ -1,6 +1,6 @@
 import React from 'react';
 // Types
-import { AnswerObject } from '../../pages/Quiz/index';
+import { AnswerObject } from '../../pages/control-panel/[username]/Quizzes/App';
 // Styles
 import { Wrapper, ButtonWrapper } from './QuestionCard.styles';
 
