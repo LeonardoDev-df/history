@@ -14,9 +14,7 @@ import { parseCookies } from 'nookies'
 import * as Yup from 'yup'
 import axios from 'axios'
 
-import { Flex } from './Flex';
 
-import { Box } from './Box';
 
 
 
@@ -204,20 +202,7 @@ function Upload({ UFOptions }) {
             </div>
 
                        
-            <Flex
-                padding={5}
-                bgColor=""
-                height="370px"
-                width="470px"
-                container
-                justifyContent="space-around"
-                alignItems="flex-start"
-                >
-
-                <Box width="370px"
-                    height="300px"
-                    display="flex"
-                >
+           
 
                     <div className='borda'>
                         <div className='ranki'>
@@ -244,9 +229,7 @@ function Upload({ UFOptions }) {
                         </div>
 
                     </div>
-                </Box>
-
-            </Flex>
+              
 
             </div>
 

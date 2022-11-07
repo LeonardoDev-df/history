@@ -15,9 +15,7 @@ import * as Yup from 'yup'
 import axios from 'axios'
 
 
-import { Flex } from './Flex';
 
-import { Box } from './Box';
 
 
 
@@ -212,20 +210,13 @@ function Upload({ UFOptions }) {
 
             <Paper ref={divRef}>
             <h2 className='emblem'>Emblemas Cadastrados</h2>
-            <Flex
-            padding={3}
-            bgColor=""
-            height="230px"
-            container
-            justifyContent="space-around"
-            alignItems="flex-start"
-            >
+           
                 <EmblemBronzi />
 
                 <EmblemSilver />
 
                 <EmblemGold/>
-            </Flex>
+          
 
 
 

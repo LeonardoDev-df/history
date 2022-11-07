@@ -14,9 +14,6 @@ import { parseCookies } from 'nookies'
 import * as Yup from 'yup'
 import axios from 'axios'
 
-import { Flex } from './Flex';
-
-import { Box } from './Box';
 
 
 
@@ -203,62 +200,7 @@ function Upload({ UFOptions }) {
         [files]
     )
 
-    const handleCepBlur = useCallback(
-        async ({ target: { value } }: FocusEvent<HTMLInputElement>) => {
-            const cep = value.replace(/\D/g, '')
-
-            if (cep != '') {
-                const validacep = /^[0-9]{8}$/
-
-                if (validacep.test(cep)) {
-                    // * Habilitar o loading na tela
-                    setIsLoading(true)
-
-                    const [response, error] = await asyncHandler(
-                        axios.get<CepResponse>(
-                            `https://viacep.com.br/ws/${cep}/json/`
-                        )
-                    )
-
-                    if (response) {
-                        const {
-                            data: { logradouro, bairro, localidade, uf }
-                        } = response
-
-                        formRef.current.setFieldValue(
-                            'streetAddress',
-                            logradouro
-                        )
-                        formRef.current.setFieldValue('province', bairro)
-                        formRef.current.setFieldValue('uf', uf)
-                        const inUfRef = formRef.current.getFieldRef('uf')
-                        inUfRef.select.selectOption({ label: uf, value: uf })
-
-                        const inCityRef = formRef.current.getFieldRef('city')
-                        inCityRef.select.selectOption({
-                            label: localidade,
-                            value: localidade
-                        })
-                    } else {
-                        addToast({
-                            type: 'error',
-                            title: 'Ocorreu um erro ao buscar seus dados',
-                            description:
-                                'Não conseguimos buscar suas informações a partir do seu cep'
-                        })
-                    }
-                    setIsLoading(false)
-                } else {
-                    // cep inválido
-                    formRef.current.setFieldError('zipCode', 'cep inválido')
-                }
-            } else {
-                // cep sem valor
-                formRef.current.setFieldError('zipCode', 'cep é obrigatório')
-            }
-        },
-        []
-    )
+   
 
 
     return (
@@ -266,33 +208,13 @@ function Upload({ UFOptions }) {
 
             <Paper ref={divRef}>
             <h2 className='emblem'>Emblemas Cadastrados</h2>
-            <Flex
-            padding={3}
-            bgColor=""
-            height="2
-            50px"
-            container
-            justifyContent="space-around"
-            alignItems="flex-start"
-            >
+           
                 <EmblemBronzi />
 
                 <EmblemSilver />
 
                 <EmblemGold/>
-            </Flex>
-
-
-
-        <Flex
-            padding={2}
-            bgColor=""
-            height="30px"
-            container
-            justifyContent="space-between"
-            alignItems="initial"
-
-        >
+          
 
         <StTrashEmble  />
 
@@ -301,18 +223,7 @@ function Upload({ UFOptions }) {
         <StTrashEmble  />
 
 
-        </Flex>
-
-
-        <Flex
-            padding={5}
-            bgColor=""
-            height="30px"
-            container
-            justifyContent="space-between"
-            alignItems="initial"
-
-        >
+      
 
             <h3>5 Pontos no Quiz </h3>
 
@@ -321,7 +232,7 @@ function Upload({ UFOptions }) {
             <h3>10 Pontos no Quiz</h3>
 
 
-        </Flex>
+        
             <h3 className='msg'>Ao participar do quiz o usuário recebe o emblema e acumula pontos para classificação no ranking.</h3>
 
 

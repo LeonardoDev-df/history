@@ -15,9 +15,7 @@ import * as Yup from 'yup'
 import axios from 'axios'
 
 
-import { Flex } from './Flex';
 
-import { Box } from './Box';
 
 
 
@@ -211,35 +209,13 @@ function Upload({ UFOptions }) {
 
             <Paper ref={divRef}>
             <h2 className='emblem'>Emblemas Cadastrados</h2>
-            <Flex
-            padding={3}
-            bgColor=""
-            height="300px"
-            container
-            justifyContent="space-around"
-            alignItems="flex-start"
-            >
+          
                 <EmblemBronzi />
 
                 <EmblemSilver />
 
                 <EmblemGold/>
-            </Flex>
-
-
-
-       
-
-
-        <Flex
-            padding={5}
-            bgColor=""
-            height="30px"
-            container
-            justifyContent="space-between"
-            alignItems="initial"
-
-        >
+           
 
             <h3>5 Pontos no Quiz </h3>
 
@@ -248,7 +224,7 @@ function Upload({ UFOptions }) {
             <h3>10 Pontos no Quiz</h3>
 
 
-        </Flex>
+       
             <h3 className='msg'>Ao participar do quiz o usuário recebe o emblema e acumula pontos para classificação no ranking.</h3>
 
 

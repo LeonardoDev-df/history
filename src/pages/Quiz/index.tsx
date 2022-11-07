@@ -1,9 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Flex } from './Flex';
 
-import { Box } from './Box';
 
 
 import {
@@ -222,19 +220,7 @@ function Upload({ UFOptions }) {
 
                  <div className='group'>
 
-                    <Flex
-                    padding={5}
-                    bgColor=""
-                    height="370px"
-                    container
-                    justifyContent="space-around"
-                    alignItems="flex-start"
-                    >
-
-                    <Box width="370px"
-                        height="300px"
-                        display="flex"
-                    >
+                   
 
                         <div className='bordi'>
                         <QuizGaming />
@@ -242,24 +228,7 @@ function Upload({ UFOptions }) {
 
 
                         </div>
-                    </Box>
-
-                </Flex>
-
-                <Flex
-                    padding={5}
-                    bgColor=""
-                    height="370px"
-                    width="470px"
-                    container
-                    justifyContent="space-around"
-                    alignItems="flex-start"
-                    >
-
-                    <Box width="370px"
-                        height="300px"
-                        display="flex"
-                    >
+                   
 
                         <div className='borda'>
                             <div className='ranki'>
@@ -285,11 +254,9 @@ function Upload({ UFOptions }) {
                             </div>
 
                         </div>
-                    </Box>
+                 
 
-                </Flex>
-
-            </div>
+                 </div>
 
 
                 </StForm>
