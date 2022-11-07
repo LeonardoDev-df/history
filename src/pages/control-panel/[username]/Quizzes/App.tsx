@@ -2,7 +2,7 @@ import React, { useState,  useRef } from 'react';
 
 import QuestionCard from '../../../../components/Question/QuestionCard';
 // types
-import { QuestionsState, Difficulty } from './API';
+
 
 // Styles
 import { GlobalStyle, Wrapper } from './App.styles';
