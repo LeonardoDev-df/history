@@ -1,7 +1,10 @@
 import React, { useState,  useRef } from 'react';
-
+import { fetchQuizQuestions } from '../../../../components/Select';
+// Components
 import QuestionCard from '../../../../components/Question/QuestionCard';
 // types
+import { QuestionsState, Difficulty } from '../../../../components/Select';
+
 
 
 import { Loading } from '../../../../components/Loading'
@@ -21,7 +24,7 @@ import {
     StForm,
     FormInputContainer,
     GlobalStyle,
-     Wrapper
+    Wrapper
 } from '../../../../styles/pages/shared/control-panel.styles';
 
 

@@ -2,9 +2,9 @@ import ReactDOM from 'react-dom';
 import App from './App';
 
 import React, { useState } from 'react';
-import { fetchQuizQuestions } from './App';
+import { fetchQuizQuestions } from '../../../../components/Select';
 // types
-import { QuestionsState, Difficulty } from './App';
+
 
 import {
     useContext,
@@ -33,12 +33,12 @@ import {
 import { SidebarLayout } from '../../../../components/layouts/sidebar-layout-quiz'
 import getValidationErrors from '../../../../utils/getValidationErrors'
 import { sortArrayObject } from '../../../../utils/sortArrayObject'
-import { asyncHandler } from '../../../../utils/asyncHandler'
+import { asyncHandler, shuffleArray } from '../../../../utils/asyncHandler'
 import { InputMask } from '../../../../components/InputMask'
 import { FileForm } from '../../../../components/FileForm'
 import { AUTH_TOKEN_KEY } from '../../../../contexts/auth'
-import { Loading } from '../../../../components/Loading'
-import { Select } from '../../../../components/Select'
+import { Loading, } from '../../../../components/Loading'
+import { Select, QuestionsState, Difficulty } from '../../../../components/Select'
 import { useToast } from '../../../../hooks/use-toast'
 import { Input } from '../../../../components/Input'
 import Head from '../../../../infra/components/Head'
