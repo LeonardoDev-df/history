@@ -2,9 +2,9 @@ import ReactDOM from 'react-dom';
 import App from './App';
 
 import React, { useState } from 'react';
-import { fetchQuizQuestions } from './API';
+import { fetchQuizQuestions } from './App';
 // types
-import { QuestionsState, Difficulty } from './API';
+import { QuestionsState, Difficulty } from './App';
 
 import {
     useContext,
