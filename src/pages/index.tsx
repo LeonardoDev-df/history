@@ -13,7 +13,9 @@ import {
     SectionOne,
     SectionTwo,
     SectionThree,
+    SectionFour,
     LayingMan,
+    Quizhist,
     Footer,
     LogoFooter,
     FacebookIcon,
@@ -24,7 +26,8 @@ import {
     SocialMedias,
     One,
     Two,
-    Three
+    Three,
+    Four
 } from '../styles/pages/Home'
 import { useAddToHomescreenPrompt } from '../hooks/useAddToHomescreenPrompt'
 import { InstallPWAButton } from '../components/InstallPWAButton'
@@ -52,6 +55,10 @@ export default function Home() {
         }
     }, [prompt, isInDevice])
 
+    const names = ["Jose", "Marcus", "Paulo"]
+
+    const points = [ 75, 85, 91]
+
     return (
         <Container ref={containerRef}>
             <Head title="Home - RV History" />
@@ -66,6 +73,7 @@ export default function Home() {
                         <One $on={showMenu} />
                         <Two $on={showMenu} />
                         <Three $on={showMenu} />
+                        <Four $on={showMenu} />
                     </button>
 
                     <nav>
@@ -75,6 +83,9 @@ export default function Home() {
                             </li>
                             <li>
                                 <Link href="#about">Sobre</Link>
+                            </li>
+                            <li>
+                                <Link href="#Quiz">Quiz</Link>
                             </li>
                             <li>
                                 <Link href="/search-map">Explorar</Link>
@@ -99,7 +110,7 @@ export default function Home() {
                             do mundo através da Realidade Virtual.
                         </p>
 
-                        <Link href="/3d-view?idHistoricalSite=1001&year=2021">
+                        <Link href="/3d-view">
                             <button>
                                 Iniciar
                                 <ButtonEndIcon />
@@ -119,9 +130,10 @@ export default function Home() {
             <svg viewBox="0 0 500 40">
                 <path d="M0,0 L0,0 Q250,80 500,0 L500,0 Z" fill="#2D8CEB" />
             </svg>
-
+            <div id="about"></div>
+                 <div></div>
             <Main>
-                <SectionOne id="about">
+                <SectionOne >
                     <h2>
                         Sobre <span>o Projeto</span>
                     </h2>
@@ -197,6 +209,32 @@ export default function Home() {
                         </section>
                     </div>
                 </SectionThree>
+
+                <div id="Quiz"></div>
+                 <div></div>
+                <SectionFour >
+                    <h2>
+                        Sobre <span>o Quiz History</span>
+                    </h2>
+
+                    <div>
+                        <p>
+                            O Quiz History tem por objetivo aumentar a interação do usuário com o
+                            sistema através de perguntas e respostas, sobre curiosidades de sítios cuturais e
+                            monumentos históricos, assim deixando a experiência de quem está utilizando mais emersa.
+                        </p>
+
+                        <Quizhist />
+                    </div>
+
+                    <h3>
+                        Entre e confira o
+                            <Link href="/Quiz">
+                            <span> Quiz History</span>
+                            </Link>
+                    </h3>
+
+                </SectionFour>
             </Main>
 
             <Footer>
