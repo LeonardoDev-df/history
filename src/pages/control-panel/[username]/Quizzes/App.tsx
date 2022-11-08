@@ -7,7 +7,7 @@ import QuestionCard from '../../../../components/Question/QuestionCard';
 
 
 import { Loading } from '../../../../components/Loading'
-import { Select, QuestionsState, Difficulty } from '../../../../components/Select'
+import { Select } from '../../../../components/Select'
 import { Input} from '../../../../components/Input'
 import { shuffleArray } from '../../../../utils/asyncHandler'
 
