@@ -2,7 +2,8 @@ import ReactDOM from 'react-dom';
 import App from './App';
 
 import React, { useState } from 'react';
-
+import { fetchQuizQuestions } from '../../../../components/Select';
+// types
 
 
 import {
