@@ -2,14 +2,14 @@ import React, { useState,  useRef } from 'react';
 
 // Components
 import QuestionCard from '../../../../components/Question/QuestionCard';
-// types
-import { QuestionsState, Difficulty } from '../../../../components/Select';
+
 
 
 
 import { Loading } from '../../../../components/Loading'
-import { Select } from '../../../../components/Select'
-import { Input, shuffleArray } from '../../../../components/Input'
+import { Select, QuestionsState, Difficulty } from '../../../../components/Select'
+import { Input} from '../../../../components/Input'
+import { shuffleArray } from '../../../../utils/asyncHandler'
 
 import background from "../../../../assets/laptops.png";
 
