@@ -4,30 +4,28 @@ import { IUser } from './../../../shared/model/user.model';
 import { getAPIClient } from '../../../services/axios'
 import { getAxiosError } from '../../../utils/getAxiosError'
 
-const getUsersHandler: NextApiHandler = async (req, res) => {
-    const { method } = req
+const deleteUserHandler: NextApiHandler = async (req, res) => {
+    const { method, query: { login } } = req
 
-    if (method === 'GET') {
+    if (method === 'DELETE') {
         try {
             const api = getAPIClient({ req })
 
-            const { data } = await api.get<IUser[]>('/api/admin/users', {
+            const { data } = await api.delete(`/api/admin/users/${login}`, {
                 headers: {
                     "Content-Type": "application/json"
                 }
             })
 
-            // Só usuários sem poder de admin
-            const handledData = data.filter(item => !item.authorities.includes('ROLE_ADMIN'))
-            res.status(200).json(handledData)
+            res.status(200).json(data)
         } catch (error) {
             const { statusCode, message } = getAxiosError(error)
             res.status(statusCode).end(message)
         }
     } else {
-        res.setHeader('Allow', ['GET'])
+        res.setHeader('Allow', ['DELETE'])
         res.status(405).end(`Method ${method} Not Allowed`)
     }
 }
 
-export default getUsersHandler
+export default deleteUserHandler

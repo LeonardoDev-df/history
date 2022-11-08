@@ -5,18 +5,16 @@ import { ThemeContext } from 'styled-components'
 import { shade, lighten } from 'polished'
 import Switch from 'react-switch'
 
-
 import { AuthContext } from '../../contexts/auth'
 import {
     Container,
     StUser,
     StUpload,
     StVr,
-    StDashboard,
     StAdmin,
     StUsers,
     StLogOut,
-    StQuiz,
+    StDashboard,
     Item,
     Divider
 } from './styles'
@@ -33,7 +31,7 @@ const userTabs = [
         icon: StUser,
         title: 'Perfil',
         urlPath: 'profile',
-        isActive: false
+        isActive: true
     },
     {
         id: 2,
@@ -46,35 +44,9 @@ const userTabs = [
         id: 3,
         icon: StVr,
         title: 'Meus uploads',
-        barra: '______________________',
         urlPath: 'my-uploads',
         isActive: false
     }
-    ,
-    {
-        id: 7,
-        icon: StQuiz,
-        title: 'Quizzes',
-        urlPath: 'ListQuiz',
-        isActive: false
-    },
-    {
-        id: 9,
-        icon: StQuiz,
-        title: ' Cadastrar Quiz',
-        urlPath: 'Quiz',
-        isActive: false
-    },
-
-    {
-        id: 10,
-        icon: StQuiz,
-        title: 'Emblemas',
-        barra: '______________________',
-        urlPath: 'emblems',
-        isActive: false
-    }
-
 ]
 
 const adminTabs = [
@@ -170,23 +142,15 @@ export const Sidebar = ({ changeTheme, showSidebar }: SidebarProps) => {
 
     return (
         <Container showSidebar={showSidebar}>
-            {items.map(({ id, title, barra, icon: Icon, isActive, urlPath}) => (
+            {items.map(({ id, title, icon: Icon, isActive, urlPath }) => (
                 <Item
                     key={id}
                     active={isActive}
                     onClick={() => handleActiveItemChange(id, urlPath)}
                 >
                     <Icon />
-
-                    <div className='linha'>
-                        <span>{title}</span>
-                        <span>{barra}</span>
-                    </div>
-
-
-
+                    <span>{title}</span>
                 </Item>
-
             ))}
 
             <Loading isVisible={isLoading} type="no-overlay" />

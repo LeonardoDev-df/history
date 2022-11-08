@@ -23,18 +23,25 @@ import {
     StForm,
     FormInputContainer
 } from '../../../../styles/pages/shared/control-panel.styles'
+import {
+    SiteImagesUpload,
+    SiteImageInputType
+} from '../../../../components/SiteImagesUpload'
 import { SidebarLayout } from '../../../../components/layouts/sidebar-layout'
 import getValidationErrors from '../../../../utils/getValidationErrors'
+import { AUTH_TOKEN_KEY, AuthContext } from '../../../../contexts/auth'
 import { sortArrayObject } from '../../../../utils/sortArrayObject'
 import { asyncHandler } from '../../../../utils/asyncHandler'
 import { InputMask } from '../../../../components/InputMask'
-import { FileForm } from '../../../../components/FileForm'
-import { AUTH_TOKEN_KEY } from '../../../../contexts/auth'
+import { isArrayEmpty } from '../../../../utils/isItEmpty'
+import { Textarea } from '../../../../components/Textarea'
+import { useContextSelector } from 'use-context-selector'
 import { Loading } from '../../../../components/Loading'
 import { Select } from '../../../../components/Select'
 import { useToast } from '../../../../hooks/use-toast'
 import { Input } from '../../../../components/Input'
 import Head from '../../../../infra/components/Head'
+import { getAPIClient } from '../../../../services/axios'
 
 interface CepResponse {
     cep: string
@@ -60,6 +67,7 @@ type OptionProps = readonly (OptionTypeBase | GroupTypeBase<OptionTypeBase>)[]
 
 type FormSiteData = {
     siteName: string
+    siteDescription: string
     zipCode: string
     streetAddress: string
     number: string
@@ -74,9 +82,10 @@ function Upload({ UFOptions }) {
     const [hasAdvancedUpload, setHasAdvancedUpload] = useState(false)
     const [isFileError, setIsFileError] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    const [files, setFiles] = useState<FileList>()
+    const [files, setFiles] = useState<SiteImageInputType[]>([])
 
-    const { colors } = useContext(ThemeContext)
+    // const { colors } = useContext(ThemeContext)
+    const account = useContextSelector(AuthContext, c => c.account)
     const { addToast } = useToast()
 
     const divRef = useRef<HTMLDivElement>(null)
@@ -84,9 +93,10 @@ function Upload({ UFOptions }) {
 
     const schema = Yup.object({
         siteName: Yup.string().required('Nome obrigatório'),
+        siteDescription: Yup.string().required('Descrição obrigatória'),
         zipCode: Yup.string().required('CEP obrigatório'),
         streetAddress: Yup.string().required('Endereço obrigatório'),
-        number: Yup.string().required('Número obrigatório'),
+        number: Yup.string(),
         complement: Yup.string(),
         province: Yup.string().required('Bairro obrigatório'),
         city: Yup.string().required('Cidade obrigatório'),
@@ -120,9 +130,18 @@ function Upload({ UFOptions }) {
             try {
                 reset()
 
-                if (!files) {
+                const imageInputsErrors = files.map(
+                    ({ image3D, imagePreview }) =>
+                        image3D.error || imagePreview.error ? true : false
+                )
+
+                if (
+                    !files ||
+                    isArrayEmpty(files) ||
+                    imageInputsErrors.includes(true)
+                ) {
                     setIsFileError(true)
-                    throw new Error('No file encountered')
+                    return
                 }
                 setIsFileError(false)
 
@@ -130,7 +149,6 @@ function Upload({ UFOptions }) {
                     abortEarly: false
                 })
 
-                const image = files[0]
                 // Success validation
                 // const formData = new FormData()
                 // const imageData = {
@@ -141,6 +159,13 @@ function Upload({ UFOptions }) {
 
                 // formData.append('image', image)
                 // formData.append('imageData', JSON.stringify(imageData))
+                const handledImages = files.map(
+                    ({ image3D, imagePreview }) => ({
+                        image3D: image3D.image,
+                        imagePreview: imagePreview.image
+                    })
+                )
+
                 const {
                     city,
                     complement,
@@ -149,14 +174,15 @@ function Upload({ UFOptions }) {
                     province,
                     number,
                     uf,
-                    zipCode
+                    zipCode,
+                    siteDescription
                 } = data
 
                 const siteData = {
-                    imageContentType: image.type,
+                    description: siteDescription,
+                    siteImages: handledImages,
+                    idUser: account.id,
                     name: siteName,
-                    size: image.size,
-                    image,
                     address: {
                         city,
                         complement,
@@ -168,12 +194,34 @@ function Upload({ UFOptions }) {
                     }
                 }
                 // TODO: API connection
-                const response = await axios.post(
-                    '/api/historical-sites/create',
-                    siteData
+
+                // const response = await axios.post(
+                //     '/api/historical-sites/create',
+                //     {
+                //         data: siteData
+                //     }
+                // )
+
+                const api = getAPIClient()
+
+                const response = await api.post(
+                    'https://rv-history-api.herokuapp.com/api/historical-sites',
+                    JSON.stringify(siteData),
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        maxContentLength: Infinity,
+                        maxBodyLength: Infinity
+                    }
                 )
+
                 if (response && response.data) {
-                    console.log(response.data)
+                    addToast({
+                        type: 'success',
+                        title: 'Boa!!!',
+                        description: 'Sítio criado com sucesso!!!'
+                    })
                 }
                 // TODO: Adicionar os toasts
             } catch (err) {
@@ -182,6 +230,14 @@ function Upload({ UFOptions }) {
                     const validationErrors = getValidationErrors(err)
 
                     formRef.current?.setErrors(validationErrors)
+                } else {
+                    console.log(err)
+                    addToast({
+                        type: 'error',
+                        title: 'Vish',
+                        description:
+                            'Não conseguimos criar o sítio. Tente novamente.'
+                    })
                 }
             } finally {
                 setIsLoading(false)
@@ -277,20 +333,29 @@ function Upload({ UFOptions }) {
             <Paper ref={divRef}>
                 <h2 style={{ marginBottom: '1.6rem' }}>Criar sítio 3D</h2>
 
+                <h3>Informações do sítio</h3>
+                <SiteImagesUpload
+                    hasAdvancedUpload={hasAdvancedUpload}
+                    setFiles={setFiles}
+                    showErrors={isFileError}
+                />
                 <StForm ref={formRef} onSubmit={handleFormSubmit}>
                     <fieldset>
-                        <h3>Informações do sítio</h3>
-                        <FileForm
-                            hasAdvancedUpload={hasAdvancedUpload}
-                            setFiles={setFiles}
-                            isEmpty={isFileError}
-                        />
-
-                        <div>
+                        <FormInputContainer>
                             <label htmlFor="siteName">Nome do sítio</label>
 
                             <Input name="siteName" id="siteName" />
-                        </div>
+                        </FormInputContainer>
+                        <FormInputContainer style={{ marginTop: '1.6rem' }}>
+                            <label htmlFor="siteDescription">
+                                Descrição do sítio
+                            </label>
+
+                            <Textarea
+                                name="siteDescription"
+                                id="siteDescription"
+                            />
+                        </FormInputContainer>
                     </fieldset>
                     <fieldset>
                         <h3>Endereço</h3>
@@ -364,7 +429,6 @@ function Upload({ UFOptions }) {
                                 <Input name="province" id="province" />
                             </div>
                         </FormGroup>
-
                     </fieldset>
 
                     <StButton type="submit" toRight>

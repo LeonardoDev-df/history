@@ -26,7 +26,7 @@ interface ChartProps {
 export function CustomLineChart({ data }: ChartProps) {
     return (
         <Container>
-
+            <ChartContainer>
                 <ResponsiveContainer width="100%" aspect={4 / 1.5}>
                     <LineChart data={data}>
                         <XAxis
@@ -62,7 +62,7 @@ export function CustomLineChart({ data }: ChartProps) {
                         />
                     </LineChart>
                 </ResponsiveContainer>
-           
+            </ChartContainer>
             <BodyContainer>
                 <Main>
                     <h3>Usuários ativos</h3>

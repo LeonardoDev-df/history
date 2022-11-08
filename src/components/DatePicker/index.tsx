@@ -41,7 +41,7 @@ export function CustomDatePicker({ name, Icon, ...rest }: InputProps) {
     function handleInputBlur() {
         setIsFocused(false)
 
-        setIsFilled(!!datepickerRef.current)
+        setIsFilled(!!datepickerRef.current?.value)
         clearError()
     }
 

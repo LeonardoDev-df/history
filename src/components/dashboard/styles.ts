@@ -17,8 +17,7 @@ const ChartVariations = {
     `,
 }
 
-type ColorType = { colorType: keyof typeof ChartVariations }
-type ColorTyper = { colorType?: keyof typeof ChartVariations }
+type ColorType = { colorType?: keyof typeof ChartVariations }
 
 export const Container = styled.div`
     width: 100%;

@@ -1,7 +1,8 @@
-import { useState, useCallback } from 'react'
 import { useContextSelector } from 'use-context-selector'
+import { useState, useCallback, useEffect } from 'react'
 import { GetServerSideProps } from 'next'
 import { parseCookies } from 'nookies'
+import axios from 'axios'
 
 import {
     Container,
@@ -18,17 +19,23 @@ import {
 } from '../../../../styles/pages/shared/control-panel.styles'
 import { SidebarLayout } from '../../../../components/layouts/sidebar-layout'
 import { AUTH_TOKEN_KEY, AuthContext } from '../../../../contexts/auth'
+import {
+    SiteProps,
+    HistoricalSiteProps
+} from '../../../../shared/model/site.model'
 import { SiteCard } from '../../../../components/SiteCard'
-import { Modal } from '../../../../components/Modal'
+import { Loading } from '../../../../components/Loading'
+import { isArrayEmpty } from '../../../../utils/isItEmpty'
 import Head from '../../../../infra/components/Head'
-import { SiteProps } from '../../../../shared/model/user.model'
+import { Modal } from '../../../../components/Modal'
+
 import CatedralImage from '../../../../assets/catedral-de-brasilia.jpg'
 import OscarImage from '../../../../assets/centro-cultural-oscar-niemeyer.jpg'
 
 const FlagType = {
-    denied: <StatusFlag colorType="red">Negado</StatusFlag>,
-    underReview: <StatusFlag colorType="blue">Em análise</StatusFlag>,
-    accepted: <StatusFlag colorType="green">Aceito</StatusFlag>
+    EM_ANALISE: <StatusFlag colorType="blue">Em análise</StatusFlag>,
+    NEGADO: <StatusFlag colorType="red">Negado</StatusFlag>,
+    ACEITO: <StatusFlag colorType="green">Aceito</StatusFlag>
 }
 
 const SiteDatas: SiteProps[] = [
@@ -56,13 +63,49 @@ const SiteDatas: SiteProps[] = [
 ]
 
 function MyUploads() {
-    // const { account } = useAuth()]
+    const [historicalSites, setHistoricalSites] = useState(
+        [] as HistoricalSiteProps[]
+    )
+    const [selectedSite, setSelectedSite] = useState({} as HistoricalSiteProps)
+    const [isLoading, setIsLoading] = useState(false)
+
     const account = useContextSelector(AuthContext, c => c.account)
     const [isModalVisible, setIsModalVisible] = useState(false)
 
     const handleCloseModal = useCallback(() => {
         setIsModalVisible(false)
     }, [])
+    const handleOpenModal = useCallback(site => {
+        setIsModalVisible(true)
+        setSelectedSite(site)
+    }, [])
+
+    useEffect(() => {
+        async function getUserHistoricalSites() {
+            setIsLoading(true)
+            try {
+                const response = await axios.get('/api/historical-sites/get', {
+                    params: {
+                        idUser: account.id
+                    }
+                })
+
+                if (response && response.data) {
+                    setHistoricalSites(response.data)
+                }
+            } catch (error) {
+                // handling
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        if (account && account.id) {
+            getUserHistoricalSites()
+        }
+    }, [account])
+
+    console.log(historicalSites)
 
     return (
         <Container>
@@ -72,43 +115,46 @@ function MyUploads() {
                     <ModalCloseButton onClick={handleCloseModal}>
                         <StClose />
                     </ModalCloseButton>
-                    <h2>Catedral Metropolitana de Brasília</h2>
+                    <h2>{selectedSite.name}</h2>
                     <ModalGridRow>
                         <div>
                             <h3>Imagens</h3>
                             <ModalSubItem>
                                 <ul>
-                                    <li>
-                                        <a href="#">
-                                            10-12-2020-asddd.jpeg <StDownLoad />
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            10-12-2020-asdd.jpeg <StDownLoad />
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            10-12-2020-asdd.jpeg <StDownLoad />
-                                        </a>
-                                    </li>
+                                    {selectedSite.siteImages?.map(item => (
+                                        <li key={item.id}>
+                                            <a
+                                                href={`data:image/jpeg;base64,${item.image3D}`}
+                                                download={`image_${item.id}`}
+                                            >
+                                                image_{item.id} <StDownLoad />
+                                            </a>
+                                        </li>
+                                    ))}
                                 </ul>
                             </ModalSubItem>
                         </div>
 
                         <div>
                             <h3>Status</h3>
-                            <ModalSubItem>{FlagType['denied']}</ModalSubItem>
+                            <ModalSubItem>
+                                {FlagType[selectedSite.status]}
+                            </ModalSubItem>
                         </div>
                     </ModalGridRow>
                     <ModalGridRow>
                         <div>
                             <h3>Link</h3>
                             {/* <ModalSubItem> */}
-                            <a href="#" style={{ marginLeft: '1.6rem' }}>
+                            <a
+                                href={`/3d-view?idHistoricalSite=${
+                                    selectedSite.id
+                                }&year=${2021}`}
+                                style={{ marginLeft: '1.6rem' }}
+                            >
                                 <StShare />
-                                http://amazon-awss3.com/vr/catedral-metropolitana-de-brasília
+                                http://rv-history/3d-view?idHistoricalSite=
+                                {selectedSite.id}&year=2021
                             </a>
                             {/* </ModalSubItem> */}
                         </div>
@@ -117,18 +163,19 @@ function MyUploads() {
             </Modal>
 
             <CardGrid>
-                {SiteDatas.map(site => (
+                {historicalSites.map(site => (
                     <SiteCard
-                        status="denied"
-                        onClick={() => setIsModalVisible(true)}
+                        key={site.id}
+                        status={site.status}
+                        onClick={() => handleOpenModal(site)}
                         siteData={site}
                     />
                 ))}
-                {[0, 0].map(item => (
-                    <div style={{ opacity: 0 }} />
-                ))}
+                {isArrayEmpty(historicalSites) && (
+                    <strong>Não encontramos nenhum sítio</strong>
+                )}
             </CardGrid>
-
+            <Loading isVisible={isLoading} />
             <Copy>&copy; 2021 RVHistory. All right reserved.</Copy>
         </Container>
     )
