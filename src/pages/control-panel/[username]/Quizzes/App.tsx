@@ -1,5 +1,5 @@
 import React, { useState,  useRef } from 'react';
-import { fetchQuizQuestions } from '../../../../components/Select';
+
 // Components
 import QuestionCard from '../../../../components/Question/QuestionCard';
 // types
@@ -45,7 +45,7 @@ export enum Difficulty {
 
 export type QuestionsState = Question & { answers: string[] };
 
-export const fetchQuizQuestions = async (amount: number, difficulty: Difficulty): Promise<QuestionsState[]> => {
+const fetchQuizQuestions = async (amount: number, difficulty: Difficulty): Promise<QuestionsState[]> => {
   const endpoint = `https://opentdb.com/api.php?amount=${amount}&difficulty=${difficulty}&type=multiple`;
   const data = await (await fetch(endpoint)).json();
   return data.results.map((question: Question) => ({
