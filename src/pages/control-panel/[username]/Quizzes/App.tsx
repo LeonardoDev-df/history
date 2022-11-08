@@ -7,7 +7,7 @@ import QuestionCard from '../../../../components/Question/QuestionCard';
 
 
 import { Loading } from '../../../../components/Loading'
-import { Select } from '../../../../components/Select'
+import { Select, QuestionsState, Difficulty } from '../../../../components/Select'
 import { Input} from '../../../../components/Input'
 import { shuffleArray } from '../../../../utils/asyncHandler'
 
@@ -28,22 +28,7 @@ import {
 } from '../../../../styles/pages/shared/control-panel.styles';
 
 
-export type Question = {
-  category: string;
-  correct_answer: string;
-  difficulty: string;
-  incorrect_answers: string[];
-  question: string;
-  type: string;
-};
 
-export enum Difficulty {
-  EASY = "easy",
-  MEDIUM = "medium",
-  HARD = "hard",
-}
-
-export type QuestionsState = Question & { answers: string[] };
 
 const fetchQuizQuestions = async (amount: number, difficulty: Difficulty): Promise<QuestionsState[]> => {
   const endpoint = `https://opentdb.com/api.php?amount=${amount}&difficulty=${difficulty}&type=multiple`;
