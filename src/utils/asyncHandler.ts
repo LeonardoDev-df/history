@@ -1,4 +1,4 @@
-/// <reference types="react-scripts" />
+
 /**
  * @param  {Promise<T>} promise
  * @returns Promise
